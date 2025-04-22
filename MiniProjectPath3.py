@@ -1,4 +1,5 @@
 #MiniProjectPath3
+#Huong Le's comment
 import numpy as np
 import matplotlib.pyplot as plt
 # Import datasets, classifiers and performance metrics
