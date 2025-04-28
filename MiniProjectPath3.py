@@ -75,9 +75,42 @@ allnumbers_images, allnumbers_labels = dataset_searcher(allnumbers)
 model_2 = KNeighborsClassifier(n_neighbors=10)
 
 
+def run_knn():
+
+  X_train_k = X_train.reshape(X_train.shape[0], -1)
+  X_test_k = X_test.reshape(X_test.shape[0], -1)
+  # Fit KNN
+  model_2.fit(X_train_k, y_train)
+
+  knn_results = model_2.predict(X_test_k)
+
+  acc_knn = OverallAccuracy(knn_results, y_test)
+  print("KNN model overall accuracy: " + str(acc_knn))
+
+  all_pred = model_2.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
+  print_numbers(allnumbers_images, all_pred)
+
+
+run_knn()
+
 #Repeat for the MLP Classifier
 model_3 = MLPClassifier(random_state=0)
 
+
+def run_mlp():
+  # Reshape training and test data
+  X_train_m = X_train.reshape(X_train.shape[0], -1)
+  X_test_m = X_test.reshape(X_test.shape[0], -1)
+  # Fit MLP
+  model_3.fit(X_train_m, y_train)
+  mlp_results = model_3.predict(X_test_m)
+
+  acc_mlp = OverallAccuracy(mlp_results, y_test)
+  print("MLP model overall accuracy: " + str(acc_mlp))
+  all_pred = model_3.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
+  print_numbers(allnumbers_images, all_pred)
+
+run_mlp()
 
 
 #Part 8
