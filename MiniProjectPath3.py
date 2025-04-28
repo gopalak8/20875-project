@@ -24,15 +24,24 @@ X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.
 def dataset_searcher(number_list,images,labels):
   #insert code that when given a list of integers, will find the labels and images
   #and put them all in numpy arrary (at the same time, as training and testing data)
-
-  pass
+  indices = [i for i, lab in enumerate(labels) if lab in number_list]
+  images_nparray = np.array(images[indices])
+  labels_nparray = np.array(labels[indices])
+  return images_nparray, labels_nparray
   #return images_nparray, labels_nparray
 
 def print_numbers(images,labels):
   #insert code that when given images and labels (of numpy arrays)
   #the code will plot the images and their labels in the title. 
-  pass
+  num = images.shape[0]
+  fig, axes = plt.subplots(1, num, figsize=(num*2, 2))
+  for ax, img, lab in zip(axes, images, labels):
+      ax.imshow(img, cmap='gray')
+      ax.set_title(str(lab))
+      ax.axis('off')
+  plt.show()
 
+  
 class_numbers = [2,0,8,7,5]
 #Part 1
 class_number_images , class_number_labels = dataset_searcher(class_numbers)
@@ -55,7 +64,8 @@ model1_results = model_1.predict('''What should go in here? Hint, look at docume
 
 def OverallAccuracy(results, actual_values):
   #Calculate the overall accuracy of the model (out of the predicted labels, how many were correct?)
-  
+  Accuracy = np.sum(results == actual_values) / len(actual_values)
+
   return Accuracy
 
 
