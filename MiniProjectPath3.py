@@ -207,27 +207,22 @@ print("Poisoned MLP accuracy:", Model3_Poison_Accuracy)
 # hint --> Suggest using KernelPCA method from sklearn library, for denoising the data. 
 # When fitting the KernelPCA method, the input image of size 8x8 should be reshaped into 1 dimension
 # So instead of using the X_train_poison data of shape 718 (718 images) by 8 by 8, the new shape would be 718 by 64
-
-
-
-#Part 14-15
-#Determine the 3 models performance but with the denoised training data, X_train_denoised and y_train instead of X_train_poison and y_train
-#Explain how the model performances changed after the denoising process.
-
-
-
-
 kpca = KernelPCA(
-    n_components=50,
+    n_components=None,
     kernel="rbf",
     gamma= 0.1,
     alpha=1e-3,
     fit_inverse_transform=True,
     random_state=0,
 )
+Z = kpca.fit(X_train_poison)
+X_train_denoise = kpca.inverse_transform(kpca.transform(X_train_poison))
 
-Z = kpca.fit_transform(X_train_poison)
-X_train_denoise = kpca.inverse_transform(Z)
+
+#Part 14-15
+#Determine the 3 models performance but with the denoised training data, X_train_denoised and y_train instead of X_train_poison and y_train
+#Explain how the model performances changed after the denoising process.
+
 
 
 # Gaussian NB
