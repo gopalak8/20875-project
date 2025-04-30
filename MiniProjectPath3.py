@@ -208,15 +208,25 @@ print("Poisoned MLP accuracy:", Model3_Poison_Accuracy)
 # When fitting the KernelPCA method, the input image of size 8x8 should be reshaped into 1 dimension
 # So instead of using the X_train_poison data of shape 718 (718 images) by 8 by 8, the new shape would be 718 by 64
 kpca = KernelPCA(
-    n_components=None,
+    n_components=20,
+#     gamma= 0.1,
+#     alpha=1e-3,
+#     fit_inverse_transform=True,
+#     random_state=0,
+# )
+# Z = kpca.fit(X_train_poison)
+# X_train_denoise = kpca.inverse_transform(kpca.transform(X_train_poison))
     kernel="rbf",
-    gamma= 0.1,
-    alpha=1e-3,
+    gamma=0.1,
     fit_inverse_transform=True,
+    eigen_solver="arpack",    # <— use ARPACK
+    tol=1e-4,                 # you can also tune the convergence tolerance
     random_state=0,
 )
-Z = kpca.fit(X_train_poison)
-X_train_denoise = kpca.inverse_transform(kpca.transform(X_train_poison))
+
+# fit + denoise
+X_train_trans = kpca.fit_transform(X_train_poison)
+X_train_denoise = kpca.inverse_transform(X_train_trans)
 
 
 #Part 14-15
