@@ -207,26 +207,21 @@ print("Poisoned MLP accuracy:", Model3_Poison_Accuracy)
 # hint --> Suggest using KernelPCA method from sklearn library, for denoising the data. 
 # When fitting the KernelPCA method, the input image of size 8x8 should be reshaped into 1 dimension
 # So instead of using the X_train_poison data of shape 718 (718 images) by 8 by 8, the new shape would be 718 by 64
+scaler = MinMaxScaler()
+X_train_scaled = scaler.fit_transform(X_train_poison)
+
 kpca = KernelPCA(
-    n_components=20,
-#     gamma= 0.1,
-#     alpha=1e-3,
-#     fit_inverse_transform=True,
-#     random_state=0,
-# )
-# Z = kpca.fit(X_train_poison)
-# X_train_denoise = kpca.inverse_transform(kpca.transform(X_train_poison))
+    n_components=64,
     kernel="rbf",
     gamma=0.1,
     fit_inverse_transform=True,
-    eigen_solver="arpack",    # <— use ARPACK
-    tol=1e-4,                 # you can also tune the convergence tolerance
+    eigen_solver="arpack",
     random_state=0,
 )
+X_train_kpca = kpca.fit_transform(X_train_scaled)
+X_denoised_scaled = kpca.inverse_transform(X_train_kpca)
+X_train_denoise = scaler.inverse_transform(X_denoised_scaled)   
 
-# fit + denoise
-X_train_trans = kpca.fit_transform(X_train_poison)
-X_train_denoise = kpca.inverse_transform(X_train_trans)
 
 
 #Part 14-15
@@ -252,7 +247,7 @@ Model2_Denoise_Accuracy = OverallAccuracy(model2_denoise_results, y_test)
 print("Denoised KNN accuracy:", Model2_Denoise_Accuracy)
 
 # Multi-layer Perceptron
-model_3_denoise = MLPClassifier(random_state=0)
+model_3_denoise = MLPClassifier(random_state=0, max_iter = 500)
 model_3_denoise.fit(X_train_denoise, y_train)
 
 model3_denoise_results = model_3_denoise.predict(X_test_1)
