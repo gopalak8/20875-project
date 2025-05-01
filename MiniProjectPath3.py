@@ -44,8 +44,6 @@ def dataset_searcher(number_list, images, labels):
 
   return images_nparray, labels_nparray
 
-  #pass
-
 
 def print_numbers(images, labels):
   # insert code that when given images and labels (of numpy arrays)
@@ -79,7 +77,7 @@ class_numbers = [2, 0, 8, 7, 5]
 # Part 1
 class_number_images, class_number_labels = dataset_searcher(class_numbers, images, labels)
 # Part 2
-#print_numbers(class_number_images, class_number_labels)
+print_numbers(class_number_images, class_number_labels) #clean
 
 model_1 = GaussianNB()
 
@@ -136,7 +134,7 @@ def knn():
   print("KNN model overall accuracy: " + str(acc_knn))
 
   all_pred = model_2.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
-  #print_numbers(allnumbers_images, all_pred)
+  print_numbers(allnumbers_images, all_pred) #KNN 
 
 
 knn()
@@ -156,7 +154,7 @@ def mlp():
   acc_mlp = OverallAccuracy(mlp_results, y_test)
   print("MLP model overall accuracy: " + str(acc_mlp))
   all_pred = model_3.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
- # print_numbers(allnumbers_images, all_pred)
+  print_numbers(allnumbers_images, all_pred) #mlp
 
 mlp()
 

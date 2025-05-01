@@ -50,7 +50,7 @@ The first task is to understand the digits dataset from sklearn. This dataset in
 The first task is to understand this data by importing the dataset and printing out some of the samples. You will need to do the following in Path 3:
 
 1. Complete the code for dataset_searcher and print_number in MinProjectPath3.py
-2. print out and plot the numbers of the class [2, 0, 8, 7, 5]
+2. print out and plot the numbers of class [2, 0, 8, 7, 5]
 
 Incomplete sample code is given as a guideline to create and fit different models to the data. Please refer to the sklearn documentation of (1) Gaussian Naive Bayes (https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html), (2) K-NeighborsClassifier (https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html), and (3) MLPClassifier (https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html), to properly do the following:
 
