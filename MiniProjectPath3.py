@@ -14,10 +14,10 @@ from sklearn.base import clone
 from sklearn.preprocessing import MinMaxScaler
 import copy
 
-rng = np.random.RandomState(1)
-digits = datasets.load_digits()
-images = digits.images
-labels = digits.target
+rng = np.random.RandomState(1) 
+digits = datasets.load_digits() 
+images = digits.images 
+labels = digits.target 
 
 # Get our training data
 X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.6, shuffle=False)
@@ -163,8 +163,10 @@ mlp()
 # Code for generating poison data. There is nothing to change here.
 noise_scale = 10.0
 poison = rng.normal(scale=noise_scale, size=X_train.shape)
-
+#add noise to the training data
 X_train_poison1 = X_train + poison
+# add noise to the test data
+allnumbers_poison = allnumbers_images + rng.normal(scale=noise_scale, size=allnumbers_images.shape)
 
 
 #Part 9-11
@@ -176,8 +178,9 @@ X_test_1 = X_test.reshape(X_test.shape[0], -1)
 #gaussian nb
 model_1_poison = GaussianNB()
 model_1_poison.fit(X_train_poison, y_train)
-
 model1_poison_results = model_1_poison.predict(X_test_1)
+all_pred1 = model_1_poison.predict(allnumbers_poison.reshape(allnumbers_poison.shape[0], -1))
+print_numbers(allnumbers_poison, all_pred1)
 Model1_Poison_Accuracy = OverallAccuracy(model1_poison_results, y_test)
 print("Poisoned GaussianNB accuracy:", Model1_Poison_Accuracy)
 
@@ -187,6 +190,8 @@ model_2_poison.fit(X_train_poison, y_train)
 
 model2_poison_results = model_2_poison.predict(X_test_1)
 Model2_Poison_Accuracy = OverallAccuracy(model2_poison_results, y_test)
+all_pred2 = model_2_poison.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
+print_numbers(allnumbers_poison, all_pred2) 
 print("Poisoned KNN accuracy:", Model2_Poison_Accuracy)
 
 #mlp
@@ -195,9 +200,9 @@ model_3_poison.fit(X_train_poison, y_train)
 
 model3_poison_results = model_3_poison.predict(X_test_1)
 Model3_Poison_Accuracy = OverallAccuracy(model3_poison_results, y_test)
+all_pred3 = model_3_poison.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
+print_numbers(allnumbers_poison, all_pred3)
 print("Poisoned MLP accuracy:", Model3_Poison_Accuracy)
-
-
 
 
 #Part 12-13
@@ -206,6 +211,7 @@ print("Poisoned MLP accuracy:", Model3_Poison_Accuracy)
 # When fitting the KernelPCA method, the input image of size 8x8 should be reshaped into 1 dimension
 # So instead of using the X_train_poison data of shape 718 (718 images) by 8 by 8, the new shape would be 718 by 64
 scaler = MinMaxScaler()
+#scale and denoise training data
 X_train_scaled = scaler.fit_transform(X_train_poison)
 
 kpca = KernelPCA(
@@ -221,11 +227,15 @@ X_denoised_scaled = kpca.inverse_transform(X_train_kpca)
 X_train_denoise = scaler.inverse_transform(X_denoised_scaled)   
 
 
-
 #Part 14-15
 #Determine the 3 models performance but with the denoised training data, X_train_denoised and y_train instead of X_train_poison and y_train
 #Explain how the model performances changed after the denoising process.
 
+#scale and denoise test data
+allnumbers_images_scaled = scaler.transform(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
+allnumbers_kpca = kpca.transform(allnumbers_images_scaled)
+allnumbers_denoised_scaled = kpca.inverse_transform(allnumbers_kpca)
+allnumbers_denoised = scaler.inverse_transform(allnumbers_denoised_scaled).reshape(allnumbers_images.shape)
 
 
 # Gaussian NB
@@ -234,6 +244,9 @@ model_1_denoise.fit(X_train_denoise, y_train)
 
 model1_denoise_results = model_1_denoise.predict(X_test_1)
 Model1_Denoise_Accuracy = OverallAccuracy(model1_denoise_results, y_test)
+all_pred1_denoise = model_1_denoise.predict(allnumbers_denoised.reshape(allnumbers_denoised.shape[0], -1))
+print_numbers(allnumbers_denoised, all_pred1_denoise)
+
 print("Denoised GaussianNB accuracy:", Model1_Denoise_Accuracy)
 
 # K Nearest Neighbours
@@ -242,6 +255,8 @@ model_2_denoise.fit(X_train_denoise, y_train)
 
 model2_denoise_results = model_2_denoise.predict(X_test_1)
 Model2_Denoise_Accuracy = OverallAccuracy(model2_denoise_results, y_test)
+all_pred2_denoise = model_2_denoise.predict(allnumbers_denoised.reshape(allnumbers_denoised.shape[0], -1))
+print_numbers(allnumbers_denoised, all_pred2_denoise)
 print("Denoised KNN accuracy:", Model2_Denoise_Accuracy)
 
 # Multi-layer Perceptron
@@ -250,4 +265,6 @@ model_3_denoise.fit(X_train_denoise, y_train)
 
 model3_denoise_results = model_3_denoise.predict(X_test_1)
 Model3_Denoise_Accuracy = OverallAccuracy(model3_denoise_results, y_test)
+all_pred3_denoise = model_3_denoise.predict(allnumbers_denoised.reshape(allnumbers_denoised.shape[0], -1))
+print_numbers(allnumbers_denoised, all_pred3_denoise)
 print("Denoised MLP accuracy:", Model3_Denoise_Accuracy)
