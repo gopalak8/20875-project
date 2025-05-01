@@ -45,39 +45,46 @@ def dataset_searcher(number_list, images, labels):
   return images_nparray, labels_nparray
 
 
-def print_numbers(images, labels):
-  # insert code that when given images and labels (of numpy arrays)
-  # the code will plot the images and their labels in the title.
+def print_number(images, labels):
+    # Dictionary to store the first instance of each label
+    unique_labels = {}
+    for i, label in enumerate(labels):
+        if label not in unique_labels:
+            unique_labels[label] = i  # Store the index of the first occurrence
 
-  num_images = images.shape[0]
+    # Extract the first instance of each label
+    first_images = [images[idx] for idx in unique_labels.values()]
+    first_labels = [labels[idx] for idx in unique_labels.values()]
 
-  if num_images >= 10:
-    cols = 10
-  else:
-    cols = num_images
+    # Convert to numpy arrays
+    first_images = np.array(first_images)
+    first_labels = np.array(first_labels)
 
-  rows = (num_images + cols - 1) // cols
+    # Number of unique labels
+    num_images = len(first_labels)
 
-  #fig size
-  plt.figure(figsize=(cols * 1.5, rows * 1.5))
+    # Set up the plot grid
+    cols = min(10, num_images)  # Maximum 10 columns
+    rows = (num_images + cols - 1) // cols
 
-  #loop over every sample
-  for i in range(num_images):
-    plt.subplot(rows, cols, i + 1)
-    plt.imshow(images[i], cmap='gray')
-    plt.title(str(labels[i]))
-    plt.axis('off')
+    # Set figure size
+    plt.figure(figsize=(cols * 1.5, rows * 1.5))
 
-  plt.tight_layout()
-  plt.show()
-  #pass
+    # Plot each image with its label
+    for i in range(num_images):
+        plt.subplot(rows, cols, i + 1)
+        plt.imshow(first_images[i], cmap='gray')
+        plt.title(str(first_labels[i]))
+        plt.axis('off')
 
+    plt.tight_layout()
+    plt.show()
 
 class_numbers = [2, 0, 8, 7, 5]
 # Part 1
 class_number_images, class_number_labels = dataset_searcher(class_numbers, images, labels)
 # Part 2
-print_numbers(class_number_images, class_number_labels) #clean
+print_number(class_number_images, class_number_labels) 
 
 model_1 = GaussianNB()
 
@@ -113,6 +120,8 @@ print("The overall results of the Gaussian model is " + str(Model1_Overall_Accur
 # Part 5
 allnumbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 allnumbers_images, allnumbers_labels = dataset_searcher(allnumbers, images, labels)
+all_pred_gaussian_clean = model_1.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
+print_number(allnumbers_images, all_pred_gaussian_clean)
 
 
 
@@ -134,7 +143,7 @@ def knn():
   print("KNN model overall accuracy: " + str(acc_knn))
 
   all_pred = model_2.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
-  print_numbers(allnumbers_images, all_pred) #KNN 
+  print_number(allnumbers_images, all_pred) #KNN 
 
 
 knn()
@@ -154,7 +163,7 @@ def mlp():
   acc_mlp = OverallAccuracy(mlp_results, y_test)
   print("MLP model overall accuracy: " + str(acc_mlp))
   all_pred = model_3.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
-  print_numbers(allnumbers_images, all_pred) #mlp
+  print_number(allnumbers_images, all_pred) #mlp
 
 mlp()
 
@@ -180,7 +189,7 @@ model_1_poison = GaussianNB()
 model_1_poison.fit(X_train_poison, y_train)
 model1_poison_results = model_1_poison.predict(X_test_1)
 all_pred1 = model_1_poison.predict(allnumbers_poison.reshape(allnumbers_poison.shape[0], -1))
-print_numbers(allnumbers_poison, all_pred1)
+print_number(allnumbers_poison, all_pred1)
 Model1_Poison_Accuracy = OverallAccuracy(model1_poison_results, y_test)
 print("Poisoned GaussianNB accuracy:", Model1_Poison_Accuracy)
 
@@ -191,7 +200,7 @@ model_2_poison.fit(X_train_poison, y_train)
 model2_poison_results = model_2_poison.predict(X_test_1)
 Model2_Poison_Accuracy = OverallAccuracy(model2_poison_results, y_test)
 all_pred2 = model_2_poison.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
-print_numbers(allnumbers_poison, all_pred2) 
+print_number(allnumbers_poison, all_pred2) 
 print("Poisoned KNN accuracy:", Model2_Poison_Accuracy)
 
 #mlp
@@ -201,7 +210,7 @@ model_3_poison.fit(X_train_poison, y_train)
 model3_poison_results = model_3_poison.predict(X_test_1)
 Model3_Poison_Accuracy = OverallAccuracy(model3_poison_results, y_test)
 all_pred3 = model_3_poison.predict(allnumbers_images.reshape(allnumbers_images.shape[0], -1))
-print_numbers(allnumbers_poison, all_pred3)
+print_number(allnumbers_poison, all_pred3)
 print("Poisoned MLP accuracy:", Model3_Poison_Accuracy)
 
 
@@ -245,7 +254,7 @@ model_1_denoise.fit(X_train_denoise, y_train)
 model1_denoise_results = model_1_denoise.predict(X_test_1)
 Model1_Denoise_Accuracy = OverallAccuracy(model1_denoise_results, y_test)
 all_pred1_denoise = model_1_denoise.predict(allnumbers_denoised.reshape(allnumbers_denoised.shape[0], -1))
-print_numbers(allnumbers_denoised, all_pred1_denoise)
+print_number(allnumbers_denoised, all_pred1_denoise)
 
 print("Denoised GaussianNB accuracy:", Model1_Denoise_Accuracy)
 
@@ -256,15 +265,15 @@ model_2_denoise.fit(X_train_denoise, y_train)
 model2_denoise_results = model_2_denoise.predict(X_test_1)
 Model2_Denoise_Accuracy = OverallAccuracy(model2_denoise_results, y_test)
 all_pred2_denoise = model_2_denoise.predict(allnumbers_denoised.reshape(allnumbers_denoised.shape[0], -1))
-print_numbers(allnumbers_denoised, all_pred2_denoise)
+print_number(allnumbers_denoised, all_pred2_denoise)
 print("Denoised KNN accuracy:", Model2_Denoise_Accuracy)
 
 # Multi-layer Perceptron
-model_3_denoise = MLPClassifier(random_state=0, max_iter = 500)
+model_3_denoise = MLPClassifier(random_state=0)
 model_3_denoise.fit(X_train_denoise, y_train)
 
 model3_denoise_results = model_3_denoise.predict(X_test_1)
 Model3_Denoise_Accuracy = OverallAccuracy(model3_denoise_results, y_test)
 all_pred3_denoise = model_3_denoise.predict(allnumbers_denoised.reshape(allnumbers_denoised.shape[0], -1))
-print_numbers(allnumbers_denoised, all_pred3_denoise)
+print_number(allnumbers_denoised, all_pred3_denoise)
 print("Denoised MLP accuracy:", Model3_Denoise_Accuracy)
